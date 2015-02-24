@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Gintonic Web
- * @author    Philippe Lafrance
- * @link      http://gintonicweb.com
- */
 
 namespace GtwMessage\Model\Table;
 
@@ -12,7 +7,6 @@ use Cake\Routing\Router;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use Cake\I18n\Time;
 
 class MessagesTable extends Table {
 
@@ -41,6 +35,7 @@ class MessagesTable extends Table {
                 ]
             ]
         ]);
+        parent::initialize($config);
     }
 
     public function validationDefault(Validator $validator) {
@@ -75,11 +70,11 @@ class MessagesTable extends Table {
         } else { //Inbox
             $arrConditions['recipient_id'] = $user_id;
         }
-
         $response['conditions'] = [
             'conditions' => $arrConditions,
             'order' => [
-                'created' => 'asc'
+                $model.'.created' => 'asc'
+                //$model.'.is_read' => 'asc'
             ],
             'contain' => ['Sender', 'Receiver']
         ];
@@ -89,7 +84,6 @@ class MessagesTable extends Table {
 
     public function process($data, $model, $id = null, $type = null, $userId) {
         if (!empty($data)) {
-
             $response['redirect'] = Router::url(array('controller' => 'messages', 'action' => 'compose'));
             $response['message'] = __('Unable to send your message.');
             $response['status'] = false;
@@ -102,10 +96,8 @@ class MessagesTable extends Table {
             }
             $message = $this->newEntity($data);
             if ($result = $this->save($message)) {
-                $sentData['created'] = $sentData['modified'] = date('Y-m-d H:i:s');
-                $SentMessages = TableRegistry::get('SentMessages');
-                $sendMessage = $SentMessages->newEntity($sentData);
-                $result = $SentMessages->save($sendMessage);
+                $SentMessageObj = TableRegistry::get('GtwMessage.SentMessages');
+                $SentMessageObj->savesentmessage($sentData);
                 $response = $this->__setSuccess($type, __('Your Message has been sent successfully.'));
             }
             return $response;
@@ -135,12 +127,14 @@ class MessagesTable extends Table {
                         $response = $this->__setSuccess($type);
                     }
                 } else {
-                    for ($i = 0; $i < count($messageIdArr); $i++) {
-                        $messageId = $messageIdArr[$i];
+                    foreach($messageIdArr as $key=>$messageId){
                         if (!empty($messageId) && is_numeric($messageId)) {
                             $this->deleteMessage($type, $messageId);
                         }
                     }
+//                    for ($i = 0; $i < count($messageIdArr); $i++) {
+//                        $messageId = $messageIdArr[$i];
+//                    }
                     $response = $this->__setSuccess($type);
                 }
             } else if ($action == 'read') { // Mark as read
@@ -177,7 +171,6 @@ class MessagesTable extends Table {
                 $model = ($type == 'sent') ? 'SentMessages' : 'Messages';
                 $message = ($type == 'sent') ? $this->SentMessage->get($messageId) : $this->get($messageId);
                 if (!empty($message)) {
-                    //$this->TrashMessage->create();
                     $data['message_id'] = $message->id;
                     $data['user_id'] = $message->user_id;
                     $data['recipient_id'] = $message->recipient_id;

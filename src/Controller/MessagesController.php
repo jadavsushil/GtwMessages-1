@@ -11,6 +11,8 @@ class MessagesController extends AppController {
 
     public $uses = array('GintonicCMS.Users', 'GtwMessage.Messages', 'GtwMessage.SentMessages', 'GtwMessage.TrashMessages');
     public $helpers = ['GintonicCMS.GtwRequire', 'GintonicCMS.Custom', 'Paginator'];
+    
+    public $paginate = ['maxLimit' => 5];
 
     public function initialize() {
         parent::initialize();
@@ -25,6 +27,27 @@ class MessagesController extends AppController {
                 $this->layout = 'GintonicCMS.admin';    
             }
         }
+        if($this->request->session()->read('Auth.User.id')){
+            $this->getUnreadMessage($this->request->session()->read('Auth.User.id'));
+        }
+    }
+    
+    function getUnreadMessage($userId = null){
+        if(!empty($userId)){
+            $this->loadModel('GtwMessage.SentMessages');
+            $this->loadModel('GtwMessage.TrashMessages');
+            $query = $this->Messages->find('all')
+                                                ->where(['recipient_id'=>$userId,'is_read'=>0]);
+            $inboxUnread  = $query->count();
+//            $query = $this->SentMessages->find('all')
+//                                                ->where(['user_id'=>$userId]);
+//            $sentUnread  = $query->count();
+//            $query = $this->TrashMessages->find('all')
+//                                                ->where(['user_id'=>$userId]);
+//            $trashUnread  = $query->count();
+//            $this->set(compact('trashUnread','sentUnread','inboxUnread'));
+            $this->set(compact('inboxUnread'));
+        }
     }
 
     public function index($type = 'inbox') {
@@ -32,10 +55,8 @@ class MessagesController extends AppController {
         $this->set('title_for_layout', 'Messages');
         $response = $this->Messages->getMessages($type, $userId);
         $model = $response['model'];
-
         $this->loadModel('GtwMessage.' . $model);
-        $query = $this->{$model}->find('all')->where($response['conditions']['conditions'])->contain($response['conditions']['contain']);
-
+        $query = $this->{$model}->find('all',['order'=>$response['conditions']['order']])->where($response['conditions']['conditions'])->contain($response['conditions']['contain']);
         $messages = $this->paginate($query);
         $this->set(compact('type', 'model', 'messages'));
     }

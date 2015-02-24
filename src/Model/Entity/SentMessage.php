@@ -1,6 +1,6 @@
 <?php
 
-namespace GtwMessages\Model\Entity;
+namespace GtwMessage\Model\Entity;
 
 use Cake\ORM\Entity;
 

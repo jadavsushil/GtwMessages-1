@@ -13,4 +13,4 @@ Router::plugin('GtwMessage', function ($routes) {
         $routes->connect('/messages/forward/*', array('controller' => 'messages', 'action' => 'forward'));
         //$routes->connect('/messages/*', array('controller' => 'messages', 'action' => 'display'));
         $routes->fallbacks('InflectedRoute');
-    });
+});

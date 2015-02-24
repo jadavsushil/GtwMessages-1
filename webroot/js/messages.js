@@ -4,62 +4,42 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
     var wysiwyg = require('wysiwyg');
     
     $(document).ready(function() {
-        function initToolbarBootstrapBindings() {
-                    var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
-                        'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
-                        'Times New Roman', 'Verdana'],
-                            fontTarget = $('[title=Font]').siblings('.dropdown-menu');
-                    $.each(fonts, function (idx, fontName) {
-                        fontTarget.append($('<li><a data-edit="fontName ' + fontName + '" style="font-family:\'' + fontName + '\'">' + fontName + '</a></li>'));
-                    });
-                    $('a[title]').tooltip({container: 'body'});
-                    $('.dropdown-menu input').click(function () {
-                        return false;
-                    })
-                            .change(function () {
-                                $(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');
-                            })
-                            .keydown('esc', function () {
-                                this.value = '';
-                                $(this).change();
-                            });
-
-                    $('[data-role=magic-overlay]').each(function () {
-                        var overlay = $(this), target = $(overlay.data('target'));
-                        overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
-                    });
-                    if ("onwebkitspeechchange"  in document.createElement("input")) {
-                        var editorOffset = $('#editor').offset();
-                        $('#voiceBtn').css('position', 'absolute').offset({top: editorOffset.top, left: editorOffset.left + $('#editor').innerWidth() - 35});
-                    } else {
-                        $('#voiceBtn').hide();
-                    }
-                }
-                ;
-                function showErrorAlert(reason, detail) {
-                    var msg = '';
-                    if (reason === 'unsupported-file-type') {
-                        msg = "Unsupported format " + detail;
-                    }
-                    else {
-                        console.log("error uploading file", reason, detail);
-                    }
-                    $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                            '<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
-                }
-                ;
-                initToolbarBootstrapBindings();
-                $('#editor').wysiwyg({fileUploadError: showErrorAlert});
-                window.prettyPrint && prettyPrint();
-                
-        $('#check-all').change(function (){
-            var checkboxes = $('#morefunid').find(':checkbox');    
-            if($(this).is(':checked')){
-                checkboxes.prop('checked', true);
+        $('.wysiwyg').wysihtml5();
+        
+        //more-action of index page
+        $('.more-action-chk').change(function(){
+            var numberOfChecked = $('input:checkbox:checked').not('#check-all').length;
+            var totalCheckboxes = $('input:checkbox').not('#check-all').length;
+            var numberNotChecked = totalCheckboxes - numberOfChecked;
+            if(numberOfChecked == totalCheckboxes){
+                $('#check-all').prop('checked',true);
+                $('#check-all').closest('tr').addClass('success');
             }else{
+                $('#check-all').prop('checked',false);
+                $('#check-all').closest('tr').removeClass('success');
+            }
+            if((numberOfChecked)>0){
+               $('.more-action').removeClass('disabled');
+            }else{
+               $('.more-action').addClass('disabled');
+            }
+            $(this).closest('tr').toggleClass('success');
+        });
+        //check all in index page
+        $('#check-all').change(function (e){
+            var checkboxes = $('#morefunid').find(':checkbox').not('#check-all');
+            if($(this).is(':checked')){
+                $('table tr').addClass('success');
+                checkboxes.prop('checked', true);
+                $('.more-action').removeClass('disabled');
+            }else{
+                $('.more-action').addClass('disabled');
                 checkboxes.removeAttr("checked"); 
+                $('table tr').removeClass('success');
             }
         });
+        
+        //more-action perform
         $('.dropdown-menu a').on('click',function(e){
             e.preventDefault();
             var more_action = $(this).data('value');
@@ -77,7 +57,7 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
                     success: function(data) {
                         if(typeof data.redirect !== undefined && data.status === true) {
                             window.location.href = data.redirect;
-                        }                
+                        }
                     }
                 });
             }
@@ -109,7 +89,7 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
                     }
                 }
             });
-        }    
+        }
         if(jQuery("#MessageComposeForm").length>0){
             jQuery("#MessageComposeForm").validate({
                 errorClass: 'text-danger',
@@ -129,9 +109,9 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
                         required: "Please enter subject"
                     }
                 },
-                errorPlacement: function (error, element) { 
+                errorPlacement: function (error, element) {
                     error.insertAfter(element.parent('div'));
-                }   
+                }
             });
         }
         $('.messageForm').submit(function (e) {
@@ -147,9 +127,6 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
                     }
                 }
             });
-        });   
-        $("#inbox-table input[type='checkbox']").change(function() {
-            $(this).closest('tr').toggleClass("highlight", this.checked);
         });
     });
 });

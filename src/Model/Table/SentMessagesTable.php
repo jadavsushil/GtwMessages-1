@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Gintonic Web
- * @author    Philippe Lafrance
- * @link      http://gintonicweb.com
- */
 
 namespace GtwMessage\Model\Table;
 
@@ -14,7 +9,6 @@ use Cake\I18n\Time;
 class SentMessagesTable extends Table {
 
     public function initialize(array $config) {
-        
         $this->belongsTo('Sender', [
             'className' => 'GintonicCMS.Users',
             'foreignKey' => 'user_id',
@@ -38,7 +32,16 @@ class SentMessagesTable extends Table {
                 ]
             ]
         ]);
+        parent::initialize($config);
     }
+        
+    public function savesentmessage($data = null){
+        if(!empty($data)){
+            $sentMessageEntity = $this->newEntity($data);
+            $this->save($sentMessageEntity);
+        }
+    }
+    
 
     function setRead($message) {
         if (empty($message->is_read) || $message->read_on_date == '0000-00-00 00:00:00') {

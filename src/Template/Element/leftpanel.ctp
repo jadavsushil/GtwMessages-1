@@ -19,13 +19,13 @@ $arrTypes = array(
     <ul class="nav nav-pills nav-stacked">
         <li class="header">Folders</li>        
         <li class="<?php echo ($type=='' || $type=='inbox')?'active':''?>">
-            <?php echo $this->Html->link($arrTypes['inbox'],array('action'=>'index'),array('escape'=>false))?>
+            <?php echo $this->Html->link($arrTypes['inbox'] . ((isset($inboxUnread) && !empty($inboxUnread))?'('.$inboxUnread.')':''),array('action'=>'index'),array('escape'=>false))?>
         </li>
         <li class="<?php echo ($type=='sent')?'active':''?>">
-            <?php echo $this->Html->link($arrTypes['sent'],array('action'=>'index','sent'),array('escape'=>false))?>
+            <?php echo $this->Html->link($arrTypes['sent'].((isset($sentUnread)&& !empty($sentUnread))?'('.$sentUnread.')':''),array('action'=>'index','sent'),array('escape'=>false))?>
         </li>
         <li class="<?php echo ($type=='trash')?'active':''?>">
-            <?php echo $this->Html->link($arrTypes['trash'],array('action'=>'index','trash'),array('escape'=>false))?>
+            <?php echo $this->Html->link($arrTypes['trash'].((isset($trashUnread)&& !empty($trashUnread))?'('.$trashUnread.')':''),array('action'=>'index','trash'),array('escape'=>false))?>
         </li>
     </ul>
 </div>
