@@ -8,11 +8,9 @@ echo $this->GtwRequire->req('message/messages');
 ?>
 <span class="gtw-message">
     <h1><?php echo __('Messages'); ?></h1>
-    <div class="row">        
-        <div class="col-md-2 col-xs-3">
-            <?php echo $this->element('leftpanel'); ?>
-        </div>
-        <div class="col-md-10  col-xs-9">		
+    <div class="row">
+        <?php echo $this->element('GtwMessage.header');?>
+        <div class="col-md-12  col-xs-12">
             <?php echo $this->Form->create('morefuntion', ['id' => 'morefunid', 'class' => 'form-horizontal']); ?>
             <?php echo $this->Form->input('type', array('type' => 'hidden', 'id' => 'gtwMessagetype', 'value' => $type)); ?>
             <?php if (!empty(count($messages))) { ?>

@@ -1,119 +1,29 @@
-define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath) {
+define(['jquery', 'basepath', 'jqueryvalidate', 'wysiwyg','message/bootstrap-tokenfield.min'], function ($, basepath) {
     var $ = require('jquery');
     var jqueryvalidate = require('jqueryvalidate');
     var wysiwyg = require('wysiwyg');
-    
-    $(document).ready(function() {
+    var tokens = require('message/bootstrap-tokenfield.min');
+
+    $(document).ready(function () {
         $('.wysiwyg').wysihtml5();
-        
-        //more-action of index page
-        $('.more-action-chk').change(function(){
-            var numberOfChecked = $('input:checkbox:checked').not('#check-all').length;
-            var totalCheckboxes = $('input:checkbox').not('#check-all').length;
-            var numberNotChecked = totalCheckboxes - numberOfChecked;
-            if(numberOfChecked == totalCheckboxes){
-                $('#check-all').prop('checked',true);
-                $('#check-all').closest('tr').addClass('success');
-            }else{
-                $('#check-all').prop('checked',false);
-                $('#check-all').closest('tr').removeClass('success');
-            }
-            if((numberOfChecked)>0){
-               $('.more-action').removeClass('disabled');
-            }else{
-               $('.more-action').addClass('disabled');
-            }
-            $(this).closest('tr').toggleClass('success');
-        });
-        //check all in index page
-        $('#check-all').change(function (e){
-            var checkboxes = $('#morefunid').find(':checkbox').not('#check-all');
-            if($(this).is(':checked')){
-                $('table tr').addClass('success');
-                checkboxes.prop('checked', true);
-                $('.more-action').removeClass('disabled');
-            }else{
-                $('.more-action').addClass('disabled');
-                checkboxes.removeAttr("checked"); 
-                $('table tr').removeClass('success');
+        jQuery("#MessageComposeForm").validate({
+            errorClass: 'text-danger',
+            rules: {
+                "body": {
+                    required: true
+                }
+            },
+            messages: {
+                "body": {
+                    required: "Please enter something."
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent('div'));
             }
         });
         
-        //more-action perform
-        $('.dropdown-menu a').on('click',function(e){
-            e.preventDefault();
-            var more_action = $(this).data('value');
-            if(more_action !=0){
-                var checkedValues = $('input:checkbox:checked').map(function() {
-                    return this.value;
-                }).get();
-                var type = $('#gtwMessagetype').val();
-                actionUrl = $(this).parents('.dropdown-menu').data('url')+"/"+checkedValues+"/"+more_action+"/"+type;                        
-                $("#loadingSpinner").fadeIn();
-                $.ajax({
-                    url: actionUrl,
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if(typeof data.redirect !== undefined && data.status === true) {
-                            window.location.href = data.redirect;
-                        }
-                    }
-                });
-            }
-        });
-        if($("#MessageForwardForm").length >0){
-            $("#MessageForwardForm").validate({
-                rules: {
-                    "data[Message][title]": {
-                        required: true
-                    }
-                },
-                messages: {
-                    "data[Message][title]": {
-                        required: "Please enter subject"
-                    }
-                }
-            });
-        }
-        if($("#MessageReplyForm").length >0){
-            jQuery("#MessageReplyForm").validate({
-                rules: {
-                    "data[Message][title]": {
-                        required: true
-                    }
-                },
-                messages: {
-                    "data[Message][title]": {
-                        required: "Please enter subject"
-                    }
-                }
-            });
-        }
-        if(jQuery("#MessageComposeForm").length>0){
-            jQuery("#MessageComposeForm").validate({
-                errorClass: 'text-danger',
-                rules: {
-                    "data[Message][recipient_id]": {
-                        required: true
-                    },
-                    "data[Message][title]": {
-                        required: true
-                    }
-                },
-                messages: {
-                    "data[Message][recipient_id]": {
-                        required: "Please select recipient"
-                    },
-                    "data[Message][title]": {
-                        required: "Please enter subject"
-                    }
-                },
-                errorPlacement: function (error, element) {
-                    error.insertAfter(element.parent('div'));
-                }
-            });
-        }
+        $(".chat-msg-inner").scrollTop($('.chat-msg-inner').height()+150);
         $('.messageForm').submit(function (e) {
             e.preventDefault();
             $.ajax({
@@ -121,12 +31,64 @@ define(['jquery', 'basepath','jqueryvalidate','wysiwyg'], function ($, basepath)
                 dataType: 'json',
                 type: 'post',
                 data: $(this).serialize(),
-                success: function(data) {
-                    if(typeof data.redirect !== 'undefined' && data.status === true) {
-                        window.location.href = data.redirect;
+                success: function (data) {
+                    if (data.status) {
+                        $('.chat-msg-inner').append(data.content);
+                        //$('.chat-msg-inner .delete-message').bind('click');
+                        //bindDelete();
+                        //window.location.href = data.redirect;
                     }
                 }
             });
         });
+        
+        //delete chat-message
+        function deletemessage(curDiv) {
+            alert('ad');
+            if(confirm('Do you want to delete this message ?')){
+                $.ajax({
+                    url: curDiv.attr('href'),
+                    dataType: 'json',
+                    success: function (data) {
+                        if (typeof data.status !== 'undefined' && data.status === 'success') {
+                            curDiv.parent().addClass('deleted-message-color');
+                            curDiv.parent().html('This message has been removed.&nbsp;&nbsp;&nbsp;<i class="fa fa-trash-o"></i>');
+                        }
+                    }
+                });
+            }
+        }
+        
+        //change status
+        $('.change-message-status').on('click',function(e){
+            e.preventDefault();
+            var curEle = $(this);
+            var status = $(this).data('status');
+            alert(status);
+            params = 0;
+            if(status == 'read'){
+                params = 1;
+            }
+            $.ajax({
+                url: $(this).attr('href') + "/" + params,
+                dataType: 'json',
+                success: function (data) {
+                    if (typeof data.status !== 'undefined' && data.status === 'success') {
+                        if(status === 'read'){
+                            curEle.parent().removeClass('text-info');
+                            curEle.text('unread');
+                            curEle.data('status','unread');
+                        }else{
+                            curEle.parent().addClass('text-info');
+                            curEle.text('read');
+                            curEle.data('status','read');
+                        }
+                    }
+                }
+            });
+        });
+        
     });
+    
+    
 });

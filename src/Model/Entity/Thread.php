@@ -4,11 +4,9 @@ namespace GtwMessage\Model\Entity;
 
 use Cake\ORM\Entity;
 
-class SentMessage extends Entity
+class Thread extends Entity
 {
 
     protected $_accessible = ['*' => true];
     
 }
-
-?>
