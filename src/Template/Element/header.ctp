@@ -11,4 +11,5 @@ foreach ($usersList as $user):
     }
     ?>
 <?php endforeach; ?>
+<?php echo $this->Html->link($this->Html->image('/GtwMessage/img/user-add.png',['class'=>'img-circle img-responsive center-block']). '<span> Add User </span>',['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose',0,'group'],['escape'=>false]); ?>
 </div>

@@ -36,22 +36,39 @@ class ThreadsTable extends Table {
         
     function getThread($userId = null,$recipientId = null,$threadUserIds = []){
         $this->ThreadParticipants = TableRegistry::get('GtwMessage.ThreadParticipants');
-        $recipantThreads = $this->ThreadParticipants->find()
-                                    ->where(['ThreadParticipants.user_id'=>$recipientId])
-                                    ->select(['ThreadParticipants.thread_id'])
-                                    ->combine('thread_id','thread_id')
-                                    ->toArray();
-        $threads = $this->ThreadParticipants->find()
-                ->where(['ThreadParticipants.user_id'=>$userId,'ThreadParticipants.thread_id IN'=>$recipantThreads])
-                ->select(['ThreadParticipants.thread_id'])
-                ->order('ThreadParticipants.thread_id ASC')
+        $participantsUsers = [$userId,$recipientId];
+        if(empty($recipientId) && !empty($threadUserIds)){
+            $threadUserIds[] = $userId;
+            $participantsUsers = $threadUserIds;
+        }
+        $threadQuery = $this->ThreadParticipants->find()
+                ->where(['ThreadParticipants.user_id IN' => $participantsUsers]);
+
+        $threads = $threadQuery->select([
+                    'ThreadParticipants.thread_id',
+                    'count' => $threadQuery->func()->count('ThreadParticipants.thread_id')
+                ])
+                ->group('ThreadParticipants.thread_id')
+                ->having(['count' => count($participantsUsers)])
                 ->toArray();
+//        $recipantThreads = $this->ThreadParticipants->find()
+//                                    ->where(['ThreadParticipants.user_id'=>$recipientId])
+//                                    ->select(['ThreadParticipants.thread_id'])
+//                                    ->combine('thread_id','thread_id')
+//                                    ->toArray();
+//        $threads = $this->ThreadParticipants->find()
+//                ->where(['ThreadParticipants.user_id'=>$userId,'ThreadParticipants.thread_id IN'=>$recipantThreads])
+//                ->select(['ThreadParticipants.thread_id'])
+//                ->order('ThreadParticipants.thread_id ASC')
+//                ->toArray();
+        if(empty($threads) && empty($recipientId)){
+            return 0;
+        }
         if(empty($threads)){
             $data['user_id'] = $userId;
             $threadResult = $this->save($this->newEntity($data));
             $data = [];
             $data['thread_id'] = $threadId = $threadResult->id;
-            $participantsUsers = [$userId,$recipientId];
             foreach($participantsUsers as $threadUserId){
                 $data['user_id'] = $threadUserId;
                 $threads[] = $this->ThreadParticipants->save($this->ThreadParticipants->newEntity($data));
