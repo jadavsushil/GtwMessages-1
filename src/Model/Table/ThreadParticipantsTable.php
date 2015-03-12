@@ -41,7 +41,8 @@ class ThreadParticipantsTable extends Table
         ]);
     }
     
-    public function getThreadParticipant($threadId = null,$userId = null,$recipientId = null){
+    public function getThreadParticipant($threadId = null,$userId = null,$recipientId = null)
+    {
         $userIds = array();
         if(!empty($userId)){
             $userIds[$userId] = $userId;
@@ -56,6 +57,19 @@ class ThreadParticipantsTable extends Table
             return $threadParticipant->id;
         }
         return 0;
+    }
+    
+    function getThreadOfUsers($threadId = null)
+    {
+        $userList = $this->find()
+                ->where(['ThreadParticipants.thread_id'=>$threadId])
+                ->combine('user_id','user_id')
+                ->toArray();
+        $this->Users = TableRegistry::get('GintonicCMS.Users');
+        $userList = $this->Users->find('list',['idField'=>'id','valueField'=>'first'])
+                                ->where(['Users.id IN'=>$userList])
+                                ->toArray();
+        return $userList;
     }
 }
 ?>

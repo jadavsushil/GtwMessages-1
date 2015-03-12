@@ -79,23 +79,34 @@ define(['jquery', 'basepath', 'jqueryvalidate', 'wysiwyg','message/bootstrap-tok
                 }
             });
         }
+        
+        var groupUsers = jQuery('.user-tokens').data('value');
         //create token
-        $.ajax({
-           url:'/gtw_message/messages/setUserCommaSepList',
-           dataType:'json',
-           success:function(response){
-                    $('.tokenfield').tokenInput(response, {
-                    theme: "facebook",
-                    preventDuplicates: true,
-                    hintText: "Enter existing user email address",
-                    noResultsText: "No user found.",
-                    searchingText: "Searching..."
-                });
-           },
-           error:function(e){
-               console.log(e);
-           }
+        $('.tokenfield').tokenInput('/gtw_message/messages/setUserCommaSepList', {
+            theme: "facebook",
+            prePopulate: groupUsers,
+            preventDuplicates: true,
+            hintText: "Enter existing user email address",
+            noResultsText: "No user found.",
+            searchingText: "Searching..."
         });
+        
+//        $.ajax({
+//           url:'/gtw_message/messages/setUserCommaSepList',
+//           dataType:'json',
+//           success:function(response){
+//                    $('.tokenfield').tokenInput(response, {
+//                    theme: "facebook",
+//                    preventDuplicates: true,
+//                    hintText: "Enter existing user email address",
+//                    noResultsText: "No user found.",
+//                    searchingText: "Searching..."
+//                });
+//           },
+//           error:function(e){
+//               console.log(e);
+//           }
+//        });
         
         //change status
         $('.change-message-status').on('click',function(e){

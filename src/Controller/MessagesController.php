@@ -49,7 +49,8 @@ class MessagesController extends AppController {
                                     }])
                                     ->toArray();
             $usersList = $this->getUnreadMessage($usersList);
-            $this->set(compact('usersList'));
+            $userGroups = $this->Threads->getGroups($this->request->session()->read('Auth.User.id'));
+            $this->set(compact('usersList','userGroups'));
         }
     }
 
@@ -124,17 +125,11 @@ class MessagesController extends AppController {
             echo json_encode($response);
             exit;
         }
-        $recipientUsers = $this->ThreadParticipants->find('all')
-                                                    ->where(['ThreadParticipants.thread_id'=>$threadId])
-                                                    ->contain(['Users'=>function($userQuery){
-                                                        return $userQuery
-                                                                ->select(['Users.id','email','first','last'])
-                                                                ->contain(['Files'=>function($fileQuery){
-                                                                    return $fileQuery
-                                                                            ->select(['Files.id','Files.filename']);
-                                                                }]);
-                                                    }])
-                                                    ->toArray();
+        $groupAdminDetail = $this->Threads->getGroupAdmin($threadId);
+        $recipientUsers = $this->ThreadParticipants->getThreadOfUsers($threadId);
+        $groupUsersJson = $recipientUsers;
+        unset($groupUsersJson[$this->request->session()->read('Auth.User.id')]);
+        $groupUsersJson = $this->setUserCommaSepList($groupUsersJson);
         $unReadMessage = $this->getUnreadMessage($this->request->session()->read('Auth.User.id'),true);
         $chats = $this->Messages->find('all')
                                 ->where(['Messages.thread_id'=>$threadId]);
@@ -144,14 +139,20 @@ class MessagesController extends AppController {
                                                     ->where(['MessageReadStatuses.status'=>2,'MessageReadStatuses.message_id IN'=>$threadMessageList])
                                                     ->combine('message_id','message_id')
                                                     ->toArray();
-        $this->set(compact('recipientUsers','chats','deletedMessage','threadId','unReadMessage'));
+        $this->set('activeGroupID',$threadId);
+        $this->set(compact('recipientUsers','groupUsersJson','chats','groupAdminDetail','deletedMessage','threadId','unReadMessage'));
     }
 
-    public function set_group_chat()
+    public function set_group_chat($activeGroupId = null)
     {
         if($this->request->is(['put','post']))
         {
             $userLists = explode(',', $this->request->data['user_list']);
+//            debug($this->request->data);
+//            exit;
+//            if(!empty($activeGroupId)){
+//                $this->Threads->get
+//            }
             if(count($userLists) == 1)
             {
                 return $this->redirect(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose',$userLists[0]]);
@@ -217,11 +218,17 @@ class MessagesController extends AppController {
     
     
     
-    public function setUserCommaSepList() {
-        $this->layout="ajax";
+    public function setUserCommaSepList($getUserList = null) {
+        $conditions = ['Users.id !=' => $this->request->session()->read('Auth.User.id')];
+        if(empty($getUserList)){
+            $this->layout="ajax";
+            $conditions = ['id !=' => $this->request->session()->read('Auth.User.id'),'email LIKE'=>'%'.$this->request->query['q'].'%'];
+        }else{
+            $conditions = ['Users.id !=' => $this->request->session()->read('Auth.User.id'),'Users.id IN'=> array_keys($getUserList)];
+        }
         $users = $this->Users
                 ->find('list', ['idField' => 'id', 'valueField' => 'email'])
-                ->where(['id !=' => $this->request->session()->read('Auth.User.id')])
+                ->where($conditions)
                 ->andWhere(['NOT'=>['Users.role'=>'admin']])
                 ->toArray();
         
@@ -232,8 +239,27 @@ class MessagesController extends AppController {
                 'name' => $userEmail
             ];
         }
-        echo json_encode($userCommaSepList);
-        exit;
+        $jsonData = json_encode($userCommaSepList);
+        if(empty($getUserList)){
+            echo $jsonData;
+            exit;
+        }
+        return $jsonData;
+//        $users = $this->Users
+//                ->find('list', ['idField' => 'id', 'valueField' => 'email'])
+//                ->where(['id !=' => $this->request->session()->read('Auth.User.id')])
+//                ->andWhere(['NOT'=>['Users.role'=>'admin']])
+//                ->toArray();
+//        
+//        $userCommaSepList = [];
+//        foreach ($users as $userId=>$userEmail){
+//            $userCommaSepList[] = [
+//                'id' => $userId,
+//                'name' => $userEmail
+//            ];
+//        }
+//        echo json_encode($userCommaSepList);
+//        exit;
     }
     
     function isAuthorized($user) {

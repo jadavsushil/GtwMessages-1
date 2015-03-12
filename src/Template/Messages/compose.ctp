@@ -8,7 +8,6 @@ $this->Helpers()->load('GintonicCMS.GtwRequire');
 echo $this->GtwRequire->req('message/messages');
 
 ?>
-<link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.4/css/bootstrap-select.css">
 <span class="gtw-message">
     <h1><?php echo __('Messages'); ?></h1>
     <div class="row">

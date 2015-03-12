@@ -79,12 +79,35 @@ class ThreadsTable extends Table {
         return $threadId;
     }
     
-    
-    function setRead($message) {
-        if (empty($message->is_read) || $message->read_on_date == '0000-00-00 00:00:00') {
-            $this->updateAll(['is_read' => 1, 'read_on_date' => date("Y-m-d H:i:s")], ['id' => $message->id]);
+    function getGroups($userId = null){
+        $threads = $this->find('list',['idField'=>'id','valueField'=>'id'])
+                ->where(['Threads.thread_participant_count >'=>2])
+                ->toArray();
+        $this->ThreadParticipants = TableRegistry::get('GtwMessage.ThreadParticipants');
+        $threadIds = $this->ThreadParticipants->find('list',['idField'=>'thread_id','valueField'=>'thread_id'])
+                                ->where(['ThreadParticipants.thread_id IN'=>$threads,'ThreadParticipants.user_id'=>$userId])
+                                ->toArray();
+        $groups = array();
+        $count = 0;
+        foreach ($threadIds as $threadId){
+            $groups[$threadId] = 'Group-'.$count++;
         }
+        return $groups;
     }
+    
+    function getGroupAdmin($threadId = null){
+        $userData = $this->find()
+                ->where(['Threads.id'=>$threadId])
+                ->contain(['Users'=>function($userQuery){
+                        return $userQuery   
+                                ->select(['id','first','last','email']);
+                }])
+                ->first()
+                ->toArray();
+        return $userData['user_thread'];
+    }
+    
+    
 
 }
 ?>
