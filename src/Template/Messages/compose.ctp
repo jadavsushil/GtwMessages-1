@@ -6,12 +6,10 @@ $this->Helpers()->load('BoostCake.Form');
 $this->Helpers()->load('GintonicCMS.GtwRequire');
 
 echo $this->GtwRequire->req('message/messages');
-
 ?>
 <span class="gtw-message">
     <h1><?php echo __('Messages'); ?></h1>
-    <div class="row">
-        <?php echo $this->element('GtwMessage.header',['recipientID'=>isset($recipient['id'])?$recipient['id']:'']); ?>
+        <?php echo $this->element('GtwMessage.header',['recipientID'=>(isset($recipient['id'])?$recipient['id']:''),'isProhibitUser'=>(isset($isProhibitUser)?$isProhibitUser:'')]); ?>
         <div class="col-md-12  col-sm-12">
             <div class="col-md-7  col-sm-7 message-div">
                 <?php
@@ -59,5 +57,4 @@ echo $this->GtwRequire->req('message/messages');
                 ?>
             </div>
         </div>
-    </div>
 </span>

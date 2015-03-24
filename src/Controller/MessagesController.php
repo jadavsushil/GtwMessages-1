@@ -54,7 +54,7 @@ class MessagesController extends AppController {
         }
     }
 
-    public function compose($recipientId = null,$isGroup = null) {
+    public function compose($recipientId = null,$isGroup = null,$isProhibitUser = null) {
         $this->set('title_for_layout', 'Compose Message');
         if(empty($recipientId) && !empty($isGroup) && $isGroup == 'group'){
             $this->set('isGroupChat',true);
@@ -82,7 +82,6 @@ class MessagesController extends AppController {
             if(!empty($recipient)){
                 $recipient = $recipient->toArray();
             }
-            
             $threadId = $this->Threads->getThread($userId,$recipientId);
             $threadParticipantId = $this->ThreadParticipants->getThreadParticipant($threadId,$userId);
             $threadRecipientId = $this->ThreadParticipants->getThreadParticipant($threadId,$recipientId);
@@ -103,7 +102,7 @@ class MessagesController extends AppController {
                 $this->MessageReadStatuses->updateAll(['status'=>1],['message_id IN'=>$unReadMessage]);
             }
             $this->set('messageType', 'compose','recipient');
-            $this->set(compact('recipient','threadId','threadParticipantId','chats','unReadMessage','threadRecipientId','deletedMessage'));
+            $this->set(compact('isProhibitUser','recipientId','recipient','threadId','threadParticipantId','chats','unReadMessage','threadRecipientId','deletedMessage'));
         }
     }
     
