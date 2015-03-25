@@ -8,7 +8,7 @@ $this->Helpers()->load('GintonicCMS.GtwRequire');
 echo $this->GtwRequire->req('message/messages');
 ?>
 <span class="gtw-message">
-    <h1><?php echo __('Messages'); ?></h1>
+        <!--<h1><?php echo __('Messages'); ?></h1>-->
         <?php echo $this->element('GtwMessage.header',['recipientID'=>(isset($recipient['id'])?$recipient['id']:''),'isProhibitUser'=>(isset($isProhibitUser)?$isProhibitUser:'')]); ?>
         <div class="col-md-12  col-sm-12">
             <div class="col-md-7  col-sm-7 message-div">
@@ -51,7 +51,7 @@ echo $this->GtwRequire->req('message/messages');
                     echo $this->Form->input('user_id', ['type' => 'hidden','value' => $this->Session->read('Auth.User.id')]);
                     echo $this->Form->input('recipient_id', ['type' => 'hidden','value' => $recipient['id']]); 
                     echo $this->Form->input('body', ['label' => false,'placeholder' => 'Message body','rows' => '2','cols' => '140','class' => 'wysiwyg']); 
-                    echo $this->Form->submit(__('Save'),['class'=>'btn btn-primary']);
+                    echo $this->Form->submit(__('Send Message'),['class'=>'btn btn-primary']);
                     echo $this->Form->end();
                 }
                 ?>

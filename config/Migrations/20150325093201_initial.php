@@ -14,6 +14,50 @@ class Initial extends AbstractMigration {
     public function change()
     {
 
+		$table = $this->table('message_read_statuses');
+    $table
+      ->addColumn('id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('message_id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('thread_participant_id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('user_id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('status', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '0', 
+      ])
+      ->addColumn('created', 'datetime', [
+        'limit' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('modified', 'datetime', [
+        'limit' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->save();
+
 		$table = $this->table('messages');
     $table
       ->addColumn('id', 'integer', [
@@ -28,7 +72,7 @@ class Initial extends AbstractMigration {
         'null' => '', 
         'default' => '', 
       ])
-      ->addColumn('recipient_id', 'integer', [
+      ->addColumn('thread_id', 'integer', [
         'limit' => '11', 
         'unsigned' => '', 
         'null' => '', 
@@ -44,18 +88,7 @@ class Initial extends AbstractMigration {
         'null' => '', 
         'default' => '', 
       ])
-      ->addColumn('is_read', 'integer', [
-        'limit' => '4', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '0', 
-      ])
-      ->addColumn('read_on_date', 'datetime', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('response_to_id', 'integer', [
+      ->addColumn('parent_id', 'integer', [
         'limit' => '11', 
         'unsigned' => '', 
         'null' => '', 
@@ -66,14 +99,36 @@ class Initial extends AbstractMigration {
         'null' => '', 
         'default' => '', 
       ])
-      ->addColumn('modified', 'datetime', [
+      ->save();
+
+		$table = $this->table('thread_participants');
+    $table
+      ->addColumn('id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('thread_id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('user_id', 'integer', [
+        'limit' => '11', 
+        'unsigned' => '', 
+        'null' => '', 
+        'default' => '', 
+      ])
+      ->addColumn('created', 'datetime', [
         'limit' => '', 
         'null' => '', 
         'default' => '', 
       ])
       ->save();
 
-		$table = $this->table('sent_messages');
+		$table = $this->table('threads');
     $table
       ->addColumn('id', 'integer', [
         'limit' => '11', 
@@ -87,106 +142,9 @@ class Initial extends AbstractMigration {
         'null' => '', 
         'default' => '', 
       ])
-      ->addColumn('recipient_id', 'integer', [
+      ->addColumn('thread_participant_count', 'integer', [
         'limit' => '11', 
         'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('title', 'string', [
-        'limit' => '50', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('body', 'text', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('is_read', 'integer', [
-        'limit' => '4', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '0', 
-      ])
-      ->addColumn('read_on_date', 'datetime', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('response_to_id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('created', 'datetime', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('modified', 'datetime', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->save();
-
-		$table = $this->table('trash_messages');
-    $table
-      ->addColumn('id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('message_id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('user_id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('recipient_id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('title', 'string', [
-        'limit' => '50', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('body', 'text', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('is_read', 'integer', [
-        'limit' => '4', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '0', 
-      ])
-      ->addColumn('read_on_date', 'datetime', [
-        'limit' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('response_to_id', 'integer', [
-        'limit' => '11', 
-        'unsigned' => '', 
-        'null' => '', 
-        'default' => '', 
-      ])
-      ->addColumn('deleted_by', 'string', [
-        'limit' => '30', 
         'null' => '', 
         'default' => '', 
       ])
