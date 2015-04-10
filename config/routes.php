@@ -1,7 +1,7 @@
 <?php
 use Cake\Routing\Router;
 
-Router::plugin('GtwMessage', function ($routes) {
+Router::plugin('Messages', function ($routes) {
         Router::extensions('rss');
         $routes->connect('/', array('controller' => 'users', 'action' => 'signin'));
         $routes->connect('/messages', array('controller' => 'messages'));

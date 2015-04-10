@@ -7,7 +7,7 @@
             <li>
                 <?php
                 echo $this->Html->link('Compose', array(
-                    'plugin' => 'gtw_messages',
+                    'plugin' => 'messages',
                     'controller' => 'messages',
                     'action' => 'compose',
                 ))
@@ -16,7 +16,7 @@
             <li>
                 <?php
                 echo $this->Html->link('Inbox', array(
-                    'plugin' => 'gtw_messages',
+                    'plugin' => 'messages',
                     'controller' => 'messages',
                     'action' => 'index',
                 ))
@@ -25,7 +25,7 @@
             <li>
                 <?php
                 echo $this->Html->link('Sent Box', array(
-                    'plugin' => 'gtw_messages',
+                    'plugin' => 'messages',
                     'controller' => 'messages',
                     'action' => 'index',
                     'sent'
@@ -35,7 +35,7 @@
             <li>
     <?php
     echo $this->Html->link('Trash', array(
-        'plugin' => 'gtw_messages',
+        'plugin' => 'messages',
         'controller' => 'messages',
         'action' => 'index',
         'trash'

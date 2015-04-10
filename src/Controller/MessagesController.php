@@ -1,6 +1,6 @@
 <?php
 
-namespace GtwMessage\Controller;
+namespace Messages\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
@@ -9,26 +9,21 @@ use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 
 class MessagesController extends AppController {
-    public $helpers = ['GintonicCMS.GtwRequire', 'GintonicCMS.Custom', 'Paginator'];
+    public $helpers = ['GintonicCMS.Require', 'GintonicCMS.Custom', 'Paginator'];
     public $paginate = ['maxLimit' => 5];
 
     public function initialize() {
         parent::initialize();
         $this->loadComponent('Auth');
-        $this->loadModel('GtwMessage.Threads');
-        $this->loadModel('GtwMessage.ThreadParticipants');
-        $this->loadModel('GtwMessage.MessageReadStatuses');
+        $this->loadModel('Messages.Threads');
+        $this->loadModel('Messages.ThreadParticipants');
+        $this->loadModel('Messages.MessageReadStatuses');
     }
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
-        $this->__checklogin();
         if(Plugin::loaded('GintonicCMS')){
             $this->loadModel('GintonicCMS.Users');
-            $this->layout = 'GintonicCMS.default';
-            if($this->request->session()->read('Auth.User.role') == 'admin'){
-                $this->layout = 'GintonicCMS.admin';    
-            }
             $this->__setHeader();
         }
     }
@@ -67,10 +62,7 @@ class MessagesController extends AppController {
                 if ($response['status']) {
                     $message = ['id'=>$response['id'],'body'=>$this->request->data['body']];
                     $this->set(compact('message'));
-                    $response['content'] = $this->render('GtwMessage.Element/new_message', 'ajax')->body();
-                    //$this->Flash->success($response['message']);
-                } else {
-                   // $this->Flash->error($response['message']);
+                    $response['content'] = $this->render('Messages.Element/new_message', 'ajax')->body();
                 }
                 echo json_encode($response);
                 exit;
@@ -109,8 +101,8 @@ class MessagesController extends AppController {
     public function group_chat($threadId = null) 
     {
         if(empty($threadId)){
-            $this->Flash->error(__('Invalid Group.'));
-            return $this->redirect(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose']);
+            $this->FlashMessage->setWarning(__('Invalid Group.'));
+            return $this->redirect(['plugin'=>'Messages','controller'=>'messages','action'=>'compose']);
         }
         if ($this->request->is(['put', 'post']) && empty($isGroup)) 
         {
@@ -119,7 +111,7 @@ class MessagesController extends AppController {
             {
                 $message = ['id' => $response['id'], 'body' => $this->request->data['body']];
                 $this->set(compact('message'));
-                $response['content'] = $this->render('GtwMessage.Element/new_message', 'ajax')->body();
+                $response['content'] = $this->render('Messages.Element/new_message', 'ajax')->body();
             }
             echo json_encode($response);
             exit;
@@ -147,20 +139,15 @@ class MessagesController extends AppController {
         if($this->request->is(['put','post']))
         {
             $userLists = explode(',', $this->request->data['user_list']);
-//            debug($this->request->data);
-//            exit;
-//            if(!empty($activeGroupId)){
-//                $this->Threads->get
-//            }
             if(count($userLists) == 1)
             {
-                return $this->redirect(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose',$userLists[0]]);
+                return $this->redirect(['plugin'=>'Messages','controller'=>'messages','action'=>'compose',$userLists[0]]);
             }
             $threadId = $this->Threads->getThread($this->request->session()->read('Auth.User.id'),0,$userLists);
-            return $this->redirect(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'group_chat',$threadId]);
+            return $this->redirect(['plugin'=>'Messages','controller'=>'messages','action'=>'group_chat',$threadId]);
         }
-        $this->Flash->error(__('Invalid Group.'));
-        return $this->redirect(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose']);
+        $this->FlashMessage->setWarning(__('Invalid Group.'));
+        return $this->redirect(['plugin'=>'Messages','controller'=>'messages','action'=>'compose']);
     }
     
     function getUnreadMessage($participantId = null,$getUnreadMessageId = false){
@@ -215,8 +202,6 @@ class MessagesController extends AppController {
         exit;
     }
     
-    
-    
     public function setUserCommaSepList($getUserList = null) {
         $conditions = ['Users.id !=' => $this->request->session()->read('Auth.User.id')];
         if(empty($getUserList)){
@@ -226,10 +211,11 @@ class MessagesController extends AppController {
             $conditions = ['Users.id !=' => $this->request->session()->read('Auth.User.id'),'Users.id IN'=> array_keys($getUserList)];
         }
         $users = $this->Users
-                ->find('list', ['idField' => 'id', 'valueField' => 'email'])
+                ->find('list', ['keyField' => 'id', 'valueField' => 'email'])
                 ->where($conditions)
                 ->andWhere(['NOT'=>['Users.role'=>'admin']])
                 ->toArray();
+        
         
         $userCommaSepList = [];
         foreach ($users as $userId=>$userEmail){
@@ -244,34 +230,7 @@ class MessagesController extends AppController {
             exit;
         }
         return $jsonData;
-//        $users = $this->Users
-//                ->find('list', ['idField' => 'id', 'valueField' => 'email'])
-//                ->where(['id !=' => $this->request->session()->read('Auth.User.id')])
-//                ->andWhere(['NOT'=>['Users.role'=>'admin']])
-//                ->toArray();
-//        
-//        $userCommaSepList = [];
-//        foreach ($users as $userId=>$userEmail){
-//            $userCommaSepList[] = [
-//                'id' => $userId,
-//                'name' => $userEmail
-//            ];
-//        }
-//        echo json_encode($userCommaSepList);
-//        exit;
     }
     
-    function isAuthorized($user) {
-        if (!empty($user)) {
-            if ($user['role'] == 'admin') {
-                $this->layout = 'admin';
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 }
-
 ?>

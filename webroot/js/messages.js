@@ -82,7 +82,7 @@ define(['jquery', 'basepath', 'jqueryvalidate', 'wysiwyg','message/bootstrap-tok
         
         var groupUsers = jQuery('.user-tokens').data('value');
         //create token
-        $('.tokenfield').tokenInput('/gtw_message/messages/setUserCommaSepList', {
+        $('.tokenfield').tokenInput('/messages/messages/setUserCommaSepList', {
             theme: "facebook",
             prePopulate: groupUsers,
             preventDuplicates: true,
@@ -92,7 +92,7 @@ define(['jquery', 'basepath', 'jqueryvalidate', 'wysiwyg','message/bootstrap-tok
         });
         
 //        $.ajax({
-//           url:'/gtw_message/messages/setUserCommaSepList',
+//           url:'/messages/messages/setUserCommaSepList',
 //           dataType:'json',
 //           success:function(response){
 //                    $('.tokenfield').tokenInput(response, {

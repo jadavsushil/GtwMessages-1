@@ -3,18 +3,18 @@ use Cake\I18n\Time;
 use Cake\View\Helper\UrlHelper;
 
 $this->Helpers()->load('BoostCake.Form');
-$this->Helpers()->load('GintonicCMS.GtwRequire');
+$this->Helpers()->load('GintonicCMS.Require');
 
-echo $this->GtwRequire->req('message/messages');
+echo $this->Require->req('message/messages');
 ?>
-<span class="gtw-message">
+<span class="messages">
         <!--<h1><?php echo __('Messages'); ?></h1>-->
-        <?php echo $this->element('GtwMessage.header',['recipientID'=>(isset($recipient['id'])?$recipient['id']:''),'isProhibitUser'=>(isset($isProhibitUser)?$isProhibitUser:'')]); ?>
+        <?php echo $this->element('Messages.header',['recipientID'=>(isset($recipient['id'])?$recipient['id']:''),'isProhibitUser'=>(isset($isProhibitUser)?$isProhibitUser:'')]); ?>
         <div class="col-md-12  col-sm-12">
             <div class="col-md-7  col-sm-7 message-div">
                 <?php
                 if(isset($isGroupChat)){
-                    echo $this->Form->create('Message', ['id' => 'GroupChatForm','url'=>['plugin'=>'GtwMessage','controller'=>'messages','action'=>'set_group_chat'], 'class' => 'gorupChatForm']);
+                    echo $this->Form->create('Message', ['id' => 'GroupChatForm','url'=>['plugin'=>'Messages','controller'=>'messages','action'=>'set_group_chat'], 'class' => 'gorupChatForm']);
                     echo $this->Form->input('user_list',['label'=>false,'class'=>'form-control tokenfield']);
                     echo $this->Form->submit(__('Done'), ['class' => 'btn btn-sm btn-primary']);
                     echo $this->Form->end();
@@ -29,11 +29,11 @@ echo $this->GtwRequire->req('message/messages');
                                         echo '<span>'.'This message has been removed.&nbsp;&nbsp;&nbsp;<i class="fa fa-trash-o"></i>'.'</span>';
                                     }else{
                                         if ($chat->user_id == $this->Session->read('Auth.User.id')) {
-                                            echo $this->Html->link('<i class="fa fa-trash-o text-danger">&nbsp;</i>', ['plugin' => 'GtwMessage', 'controller' => 'messages', 'action' => 'delete', $chat->id], ['class' => 'delete-message', 'escape' => false]);
+                                            echo $this->Html->link('<i class="fa fa-trash-o text-danger">&nbsp;</i>', ['plugin' => 'Messages', 'controller' => 'messages', 'action' => 'delete', $chat->id], ['class' => 'delete-message', 'escape' => false]);
                                         }else{
                                             //currently change status not included
 //                                            $status = ((in_array($chat->id, $unReadMessage))&& ($chat->user_id != $this->Session->read('Auth.User.id')))?'read':'unread';
-//                                            echo $this->Html->link($status, ['plugin' => 'GtwMessage', 'controller' => 'messages', 'action' => 'change_status', $chat->id], ['class' => 'change-message-status','data-status'=>$status, 'escape' => false]);
+//                                            echo $this->Html->link($status, ['plugin' => 'Messages', 'controller' => 'messages', 'action' => 'change_status', $chat->id], ['class' => 'change-message-status','data-status'=>$status, 'escape' => false]);
                                         }
                                         echo '<span>'.$chat->body.'</span>';
                                     } 
@@ -44,7 +44,7 @@ echo $this->GtwRequire->req('message/messages');
                 </div>
                 <?php
                 if(!isset($isGroupChat)){
-                    echo $this->Form->create('Message', ['id' => 'MessageComposeForm','url'=>['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose'], 'class' => 'messageForm']);
+                    echo $this->Form->create('Message', ['id' => 'MessageComposeForm','url'=>['plugin'=>'Messages','controller'=>'messages','action'=>'compose'], 'class' => 'messageForm']);
                     echo $this->Form->input('thread_id', ['type' => 'hidden','value' => $threadId]);
                     echo $this->Form->input('thread_participant_id', ['type' => 'hidden','value' => $threadParticipantId]);
                     echo $this->Form->input('thread_recipient_id', ['type' => 'hidden','value' => $threadRecipientId]);

@@ -6,7 +6,7 @@
  */
 use Cake\I18n\Time;
 ?>
-<span class="gtw-message">
+<span class="messages">
     
     <h1><?php echo __('Messages'); ?></h1>
     <div class="row">        

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace GtwMessage\Model\Table;
+namespace Messages\Model\Table;
 
 use Cake\Routing\Router;
 use Cake\ORM\Table;
@@ -10,7 +10,7 @@ use Cake\Validation\Validator;
 
 class MessagesTable extends Table {
 
-    public $uses = array('GtwMessage.SentMessages');
+    public $uses = array('Messages.SentMessages');
 
     public function initialize(array $config) {
         $this->belongsTo('Sender', [
@@ -52,7 +52,7 @@ class MessagesTable extends Table {
     }
     
     function sentMessage($userId = null,$reqData = []){
-        $response = ['status'=>false,'message'=>'Unable to sent Message','redirect'=>  Router::url(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'compose',$reqData['recipient_id']],true)];
+        $response = ['status'=>false,'message'=>'Unable to sent Message','redirect'=>  Router::url(['plugin'=>'Messages','controller'=>'messages','action'=>'compose',$reqData['recipient_id']],true)];
         if(!empty($userId) && !empty($reqData)){
             $parentId = $this->find()
                                     ->where(['Messages.thread_id'=>$reqData['thread_id']])
@@ -74,7 +74,7 @@ class MessagesTable extends Table {
     }
     
     function sentGroupMessage($userId = null,$reqData = []){
-        $response = ['status'=>false,'message'=>'Unable to sent Message','redirect'=>  Router::url(['plugin'=>'GtwMessage','controller'=>'messages','action'=>'group_chat',$reqData['thread_id']],true)];
+        $response = ['status'=>false,'message'=>'Unable to sent Message','redirect'=>  Router::url(['plugin'=>'Messages','controller'=>'messages','action'=>'group_chat',$reqData['thread_id']],true)];
         if(!empty($userId) && !empty($reqData)){
             $threadId = $reqData['thread_id'];
             $parentId = $this->find()

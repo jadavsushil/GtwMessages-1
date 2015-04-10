@@ -1,6 +1,6 @@
 <?php
 
-namespace GtwMessage\Model\Table;
+namespace Messages\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\I18n\Time;
@@ -28,14 +28,14 @@ class ThreadsTable extends Table {
                 'propertyName' => 'user_thread'
             ]],
             'hasMany' => ['ThreadParticipants'=>[
-                'className' => 'GtwMessage.ThreadParticipants',
+                'className' => 'Messages.ThreadParticipants',
                 'propertyName'=>'thread_participants'
             ]]
         ]);
     }
         
     function getThread($userId = null,$recipientId = null,$threadUserIds = []){
-        $this->ThreadParticipants = TableRegistry::get('GtwMessage.ThreadParticipants');
+        $this->ThreadParticipants = TableRegistry::get('Messages.ThreadParticipants');
         $participantsUsers = [$userId,$recipientId];
         if(empty($recipientId) && !empty($threadUserIds)){
             $threadUserIds[] = $userId;
@@ -61,7 +61,7 @@ class ThreadsTable extends Table {
 //                ->select(['ThreadParticipants.thread_id'])
 //                ->order('ThreadParticipants.thread_id ASC')
 //                ->toArray();
-        if(empty($threads) && empty($recipientId)){
+        if(empty($threads) && empty($recipientId) && empty($threadUserIds)){
             return 0;
         }
         if(empty($threads)){
@@ -80,11 +80,11 @@ class ThreadsTable extends Table {
     }
     
     function getGroups($userId = null){
-        $threads = $this->find('list',['idField'=>'id','valueField'=>'id'])
+        $threads = $this->find('list',['keyField'=>'id','valueField'=>'id'])
                 ->where(['Threads.thread_participant_count >'=>2])
                 ->toArray();
-        $this->ThreadParticipants = TableRegistry::get('GtwMessage.ThreadParticipants');
-        $threadIds = $this->ThreadParticipants->find('list',['idField'=>'thread_id','valueField'=>'thread_id'])
+        $this->ThreadParticipants = TableRegistry::get('Messages.ThreadParticipants');
+        $threadIds = $this->ThreadParticipants->find('list',['keyField'=>'thread_id','valueField'=>'thread_id'])
                                 ->where(['ThreadParticipants.thread_id IN'=>$threads,'ThreadParticipants.user_id'=>$userId])
                                 ->toArray();
         $groups = array();

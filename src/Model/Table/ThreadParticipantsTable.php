@@ -1,5 +1,5 @@
 <?php
-namespace GtwMessage\Model\Table;
+namespace Messages\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Network\Session;
@@ -23,7 +23,7 @@ class ThreadParticipantsTable extends Table
         $this->addAssociations([
             'belongsTo' => [
                 'Threads' => [
-                    'className' => 'GtwMessage.Threads',
+                    'className' => 'Messages.Threads',
                     'foreignKey' => 'thread_id',
                     'propertyName' => 'Thread'
                 ],
@@ -66,7 +66,7 @@ class ThreadParticipantsTable extends Table
                 ->combine('user_id','user_id')
                 ->toArray();
         $this->Users = TableRegistry::get('GintonicCMS.Users');
-        $userList = $this->Users->find('list',['idField'=>'id','valueField'=>'first'])
+        $userList = $this->Users->find('list',['keyField'=>'id','valueField'=>'first'])
                                 ->where(['Users.id IN'=>$userList])
                                 ->toArray();
         return $userList;

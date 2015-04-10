@@ -1,6 +1,6 @@
 <?php
 
-namespace GtwMessage\Model\Table;
+namespace Messages\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -11,7 +11,7 @@ class MessageReadStatusesTable extends Table {
         parent::initialize($config);
         
         $this->belongsTo('Messages', [
-            'className' => 'GtwMessage.Messages',
+            'className' => 'Messages.Messages',
             'foreignKey' => 'message_id',
             'propertyName' => 'Messages'
         ]);
