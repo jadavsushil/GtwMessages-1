@@ -116,35 +116,9 @@ class Initial extends AbstractMigration
 
     public function down()
     {
-        $this->dropTable('agencies');
-        $this->dropTable('album_photos');
-        $this->dropTable('attributes');
-        $this->dropTable('attributes_players');
-        $this->dropTable('comments');
-        $this->dropTable('countries');
-        $this->dropTable('files');
-        $this->dropTable('job_applications');
-        $this->dropTable('job_views');
-        $this->dropTable('jobs');
-        $this->dropTable('leagues');
-        $this->dropTable('leagues_players');
-        $this->dropTable('managers');
         $this->dropTable('message_read_statuses');
         $this->dropTable('messages');
-        $this->dropTable('offers');
-        $this->dropTable('players');
-        $this->dropTable('positions');
-        $this->dropTable('statistics');
-        $this->dropTable('statuses');
-        $this->dropTable('subscribe_plan_users');
-        $this->dropTable('subscribe_plans');
-        $this->dropTable('teams');
         $this->dropTable('thread_participants');
         $this->dropTable('threads');
-        $this->dropTable('transaction_types');
-        $this->dropTable('transactions');
-        $this->dropTable('user_customers');
-        $this->dropTable('users');
-        $this->dropTable('videos');
     }
 }
