@@ -22,13 +22,13 @@ echo $this->Require->req('message/messages');
                 ?>
                 <div class="col-md-12 col-sm-12 no-padding chat-msg-inner">
                     <?php foreach ($chats as $chat): ?>
-                        <div class="chat-message <?php echo ($chat->user_id==$this->Session->read('Auth.User.id'))?'text-right':'text-left'; ?>">
-                            <div class="<?php echo ($chat->user_id==$this->Session->read('Auth.User.id'))?'arrow_down ':'arrow_up '; ?><?php echo ((in_array($chat->id, $unReadMessage))&& ($chat->user_id != $this->Session->read('Auth.User.id')))?' text-info ':''?><?php echo (in_array($chat->id, $deletedMessage))?' deleted-message-color':''; ?>">
+                        <div class="chat-message <?php echo ($chat->user_id == $this->request->session()->read('Auth.User.id'))?'text-right':'text-left'; ?>">
+                            <div class="<?php echo ($chat->user_id == $this->request->session()->read('Auth.User.id'))?'arrow_down ':'arrow_up '; ?><?php echo ((in_array($chat->id, $unReadMessage))&& ($chat->user_id != $this->request->session()->read('Auth.User.id')))?' text-info ':''?><?php echo (in_array($chat->id, $deletedMessage))?' deleted-message-color':''; ?>">
                                 <?php 
                                     if(in_array($chat->id, $deletedMessage)){
                                         echo '<span>'.'This message has been removed.&nbsp;&nbsp;&nbsp;<i class="fa fa-trash-o"></i>'.'</span>';
                                     }else{
-                                        if ($chat->user_id == $this->Session->read('Auth.User.id')) {
+                                        if ($chat->user_id == $this->request->session()->read('Auth.User.id')) {
                                             echo $this->Html->link('<i class="fa fa-trash-o text-danger">&nbsp;</i>', ['plugin' => 'Messages', 'controller' => 'messages', 'action' => 'delete', $chat->id], ['class' => 'delete-message', 'escape' => false]);
                                         }else{
                                             //currently change status not included

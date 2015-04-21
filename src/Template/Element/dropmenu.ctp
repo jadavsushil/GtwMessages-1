@@ -1,4 +1,4 @@
-<?php if ($this->Session->read('Auth.User')): ?>
+<?php if ($this->request->session()->read('Auth.User')): ?>
     <li id="<?php echo $this->fetch('users_li_id'); ?>" class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span class='link-extendedo'><?php echo __('Message') ?> <b class="caret"></b></span>
